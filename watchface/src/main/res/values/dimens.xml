@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="max_pixels_in_ambient_mode">9px</dimen>
+
+    <dimen name="timearc_stroke_width">8dp</dimen>
+    <dimen name="timearc_stroke_width_ambient">3dp</dimen>
+
+    <dimen name="indicators_width">1.8dp</dimen>
+    <dimen name="indicators_width_ambient">1dp</dimen>
+    <dimen name="indicators_height">8dp</dimen>
+
+    <!-- indicators_height + 12dp + 0.5f * timearc_stroke_width -->
+    <dimen name="timearc_margin">24dp</dimen>
+
+    <!-- timearc_margin + 0.5f * timearc_stroke_width + 6dp -->
+    <dimen name="centerpic_margin">34dp</dimen>
+</resources>
