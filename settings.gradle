@@ -1,1 +1,1 @@
-include ':watchface'
+include ':wear', ':companion', ':common'

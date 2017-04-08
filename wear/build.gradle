@@ -1,15 +1,16 @@
 apply plugin: 'com.android.application'
 
 android {
-    compileSdkVersion 25
-    buildToolsVersion '25.0.2'
+    compileSdkVersion project.ext['compileSdkVersion']
+    buildToolsVersion project.ext['buildToolsVersion']
 
     defaultConfig {
-        applicationId 'com.nilhcem.hoodie'
+        applicationId project.ext['applicationId']
+        versionCode project.ext['versionCode']
+        versionName project.ext['versionName']
+
         minSdkVersion 21
-        targetSdkVersion 25
-        versionCode 1
-        versionName '1.0'
+        targetSdkVersion project.ext['targetSdkVersion']
     }
 
     buildTypes {
@@ -21,6 +22,7 @@ android {
 }
 
 dependencies {
+    compile project(':common')
     compile 'com.google.android.support:wearable:2.0.1'
     provided 'com.google.android.wearable:wearable:2.0.1'
 }
