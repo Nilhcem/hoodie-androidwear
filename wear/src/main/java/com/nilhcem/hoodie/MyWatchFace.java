@@ -6,6 +6,7 @@ import android.view.Gravity;
 import android.view.SurfaceHolder;
 
 import com.nilhcem.hoodie.core.WatchMode;
+import com.nilhcem.hoodie.core.WatchShape;
 
 public class MyWatchFace extends BaseWatchFaceService {
 
@@ -37,8 +38,8 @@ public class MyWatchFace extends BaseWatchFaceService {
         }
 
         @Override
-        protected void onScreenSizeChanged(int newWidth, int newHeight, int chinSize) {
-            watch.setSize(newWidth, newHeight, chinSize);
+        protected void onScreenSizeChanged(int newWidth, int newHeight, int chinSize, WatchShape shape) {
+            watch.setSize(newWidth, newHeight, chinSize, shape);
             invalidate();
         }
 

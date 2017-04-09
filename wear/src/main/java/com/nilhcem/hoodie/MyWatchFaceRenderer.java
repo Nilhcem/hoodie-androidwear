@@ -16,6 +16,7 @@ import android.graphics.RectF;
 import android.graphics.Shader;
 
 import com.nilhcem.hoodie.core.WatchMode;
+import com.nilhcem.hoodie.core.WatchShape;
 
 public class MyWatchFaceRenderer {
 
@@ -40,7 +41,7 @@ public class MyWatchFaceRenderer {
         initPaintObjects();
     }
 
-    public void setSize(int width, int height, int chinSize) {
+    public void setSize(int width, int height, int chinSize, WatchShape shape) {
         float newCenterX = 0.5f * width;
         float newCenterY = 0.5f * (height + chinSize);
 
@@ -50,7 +51,7 @@ public class MyWatchFaceRenderer {
 
             int margin = chinSize / 2;
             int diameter = Math.min(width, height + chinSize);
-            initIndicatorsPath(diameter, diameter, margin);
+            initIndicatorsPath(diameter, diameter, margin, shape);
             initArcBounds(diameter, diameter, margin);
             initBitmaps(diameter, diameter, margin);
         }
@@ -80,21 +81,42 @@ public class MyWatchFaceRenderer {
         canvas.drawArc(arcBounds, hoursRotation - 90, sweepAngle, false, timeArcPaints[modeIdx]);
     }
 
-    private void initIndicatorsPath(int width, int height, int additionalMargin) {
-        double angleRadians;
+    private void initIndicatorsPath(int width, int height, int additionalMargin, WatchShape shape) {
+        float innerRadiusX;
+        float innerRadiusY;
+        float outerRadiusX;
+        float outerRadiusY;
         float indicatorsHeight = res.getDimension(R.dimen.indicators_height) + additionalMargin;
 
+        if (shape == WatchShape.SQUARE) {
+            // outer radius: square diagonal / 2
+            outerRadiusX = (float) Math.sqrt(Math.pow(centerX, 2) + Math.pow(centerY, 2));
+            outerRadiusY = outerRadiusX;
+
+            // inner radius: top of the visible screen - indicatorsHeight
+            innerRadiusX = centerX - indicatorsHeight;
+            innerRadiusY = centerY - indicatorsHeight;
+        } else {
+            outerRadiusX = 0.5f * width;
+            outerRadiusY = 0.5f * height;
+
+            innerRadiusX = outerRadiusX - indicatorsHeight;
+            innerRadiusY = outerRadiusY - indicatorsHeight;
+        }
+
+        double angleRadians;
         indicatorsPath.reset();
+
         for (int i = 0; i < 12; i++) {
             angleRadians = Math.PI * 2 / 12 * i;
 
             indicatorsPath.moveTo(
-                    (float) (centerX + ((0.5f * width) - indicatorsHeight) * Math.cos(angleRadians)),
-                    (float) (centerY + ((0.5f * height) - indicatorsHeight) * Math.sin(angleRadians))
+                    (float) (centerX + innerRadiusX * Math.cos(angleRadians)),
+                    (float) (centerY + innerRadiusY * Math.sin(angleRadians))
             );
             indicatorsPath.lineTo(
-                    (float) (centerX + (0.5f * width) * Math.cos(angleRadians)),
-                    (float) (centerY + (0.5f * height) * Math.sin(angleRadians))
+                    (float) (centerX + outerRadiusX * Math.cos(angleRadians)),
+                    (float) (centerY + outerRadiusY * Math.sin(angleRadians))
             );
         }
     }
