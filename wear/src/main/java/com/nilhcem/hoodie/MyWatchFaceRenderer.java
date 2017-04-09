@@ -22,6 +22,7 @@ public class MyWatchFaceRenderer {
 
     private static final int INTERACTIVE_IDX = 0;
     private static final int AMBIENT_IDX = 1;
+    private static final float MIN_SWEEP_ANGLE_DEG = 2;
 
     private final Resources res;
     private final Path indicatorsPath = new Path();
@@ -77,8 +78,19 @@ public class MyWatchFaceRenderer {
         }
 
         // time arc
-        float sweepAngle = getSweepAngle(hoursRotation, minutesRotation);
-        canvas.drawArc(arcBounds, hoursRotation - 90, sweepAngle, false, timeArcPaints[modeIdx]);
+        float startAngle = hoursRotation - 90;
+        float sweepAngle = (360f - hoursRotation + minutesRotation) % 360f;
+
+        // Always keep a slight (2°) gap for readability
+        if (sweepAngle < MIN_SWEEP_ANGLE_DEG) {
+            startAngle -= 0.5f * MIN_SWEEP_ANGLE_DEG;
+            sweepAngle += 0.5f * MIN_SWEEP_ANGLE_DEG;
+        } else if (sweepAngle > 360f - MIN_SWEEP_ANGLE_DEG) {
+            startAngle += 0.5f * MIN_SWEEP_ANGLE_DEG;
+            sweepAngle -= 0.5f * MIN_SWEEP_ANGLE_DEG;
+        }
+
+        canvas.drawArc(arcBounds, startAngle, sweepAngle, false, timeArcPaints[modeIdx]);
     }
 
     private void initIndicatorsPath(int width, int height, int additionalMargin, WatchShape shape) {
@@ -137,7 +149,7 @@ public class MyWatchFaceRenderer {
         Bitmap goldTexture = Bitmap.createScaledBitmap(BitmapFactory.decodeResource(res, R.drawable.gold), width, height, true);
         Bitmap lionBitmapWhite = Bitmap.createScaledBitmap(BitmapFactory.decodeResource(res, R.drawable.lion), width - margin, height - margin, true);
 
-        // Apply the goldtexture over the lionbitmap
+        // Apply the gold texture over the lion bitmap
         lionBitmap = Bitmap.createBitmap(lionBitmapWhite.getWidth(), lionBitmapWhite.getHeight(), Bitmap.Config.ARGB_8888);
         Canvas canvas = new Canvas(lionBitmap);
         Paint paint = new Paint(Paint.ANTI_ALIAS_FLAG);
@@ -148,7 +160,7 @@ public class MyWatchFaceRenderer {
                 null);
         canvas.drawBitmap(lionBitmapWhite, 0, 0, paint);
 
-        // Apply the goldtexture on the interactive paint objects
+        // Apply the gold texture on the interactive paint objects
         BitmapShader goldShader = new BitmapShader(goldTexture, Shader.TileMode.CLAMP, Shader.TileMode.CLAMP);
         timeArcPaints[INTERACTIVE_IDX].setShader(goldShader);
         indicatorsPaints[INTERACTIVE_IDX].setShader(goldShader);
@@ -174,20 +186,5 @@ public class MyWatchFaceRenderer {
         indicatorsPaints[AMBIENT_IDX].setStyle(Paint.Style.STROKE);
         indicatorsPaints[AMBIENT_IDX].setColor(Color.WHITE);
         indicatorsPaints[AMBIENT_IDX].setStrokeWidth(res.getDimension(R.dimen.indicators_width_ambient));
-    }
-
-    private float getSweepAngle(float hoursRotation, float minutesRotation) {
-        float sweepAngle = (360f - hoursRotation + minutesRotation) % 360f;
-
-        // Always keep a slight (2°) gap for readability (except at midnight)
-        if (hoursRotation > 0.1f || minutesRotation > 0.1f) {
-            if (sweepAngle < 2f) {
-                sweepAngle = 2f;
-            }
-            if (sweepAngle > 358f) {
-                sweepAngle = 358f;
-            }
-        }
-        return sweepAngle;
     }
 }
