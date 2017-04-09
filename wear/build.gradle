@@ -1,15 +1,15 @@
 apply plugin: 'com.android.application'
 
 android {
+    // Allows you to reference product flavors in your companion module's build.gradle file
+    publishNonDefault true
+
     compileSdkVersion project.ext['compileSdkVersion']
     buildToolsVersion project.ext['buildToolsVersion']
 
     defaultConfig {
         applicationId project.ext['applicationId']
-        versionCode project.ext['versionCode']
         versionName project.ext['versionName']
-
-        minSdkVersion 21
         targetSdkVersion project.ext['targetSdkVersion']
     }
 
@@ -19,6 +19,21 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
+
+    productFlavors {
+        wear1 {
+            minSdkVersion 23
+            versionCode generateVersionCode(23)
+        }
+        wear2 {
+            minSdkVersion 25
+            versionCode generateVersionCode(25)
+        }
+    }
+}
+
+def generateVersionCode(sdkVersion) {
+    return (sdkVersion.toString() + project.ext['versionCode']).toInteger()
 }
 
 dependencies {
