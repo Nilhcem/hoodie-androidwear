@@ -41,17 +41,18 @@ public class MyWatchFaceRenderer {
     }
 
     public void setSize(int width, int height, int chinSize) {
-        int fullHeight = height + chinSize;
         float newCenterX = 0.5f * width;
-        float newCenterY = 0.5f * fullHeight;
+        float newCenterY = 0.5f * (height + chinSize);
 
-        if (Math.abs(centerX - newCenterX) > 0.5f) {
+        if (Math.abs(centerX - newCenterX) > 0.5f || Math.abs(centerY - newCenterY) > 0.5f) {
             centerX = newCenterX;
             centerY = newCenterY;
 
-            initIndicatorsPath(width, fullHeight);
-            initArcBounds(width, fullHeight);
-            initBitmaps(width, fullHeight);
+            int margin = chinSize / 2;
+            int diameter = Math.min(width, height + chinSize);
+            initIndicatorsPath(diameter, diameter, margin);
+            initArcBounds(diameter, diameter, margin);
+            initBitmaps(diameter, diameter, margin);
         }
     }
 
@@ -79,9 +80,9 @@ public class MyWatchFaceRenderer {
         canvas.drawArc(arcBounds, hoursRotation - 90, sweepAngle, false, timeArcPaints[modeIdx]);
     }
 
-    private void initIndicatorsPath(int width, int height) {
+    private void initIndicatorsPath(int width, int height, int additionalMargin) {
         double angleRadians;
-        float indicatorsHeight = res.getDimension(R.dimen.indicators_height);
+        float indicatorsHeight = res.getDimension(R.dimen.indicators_height) + additionalMargin;
 
         indicatorsPath.reset();
         for (int i = 0; i < 12; i++) {
@@ -98,8 +99,8 @@ public class MyWatchFaceRenderer {
         }
     }
 
-    private void initArcBounds(int width, int height) {
-        float margin = res.getDimension(R.dimen.timearc_margin);
+    private void initArcBounds(int width, int height, int additionalMargin) {
+        float margin = res.getDimension(R.dimen.timearc_margin) + additionalMargin;
 
         arcBounds.left = margin;
         arcBounds.top = margin;
@@ -107,8 +108,8 @@ public class MyWatchFaceRenderer {
         arcBounds.bottom = height - margin;
     }
 
-    private void initBitmaps(int width, int height) {
-        lionMargin = res.getDimension(R.dimen.centerpic_margin);
+    private void initBitmaps(int width, int height, int additionalMargin) {
+        lionMargin = res.getDimension(R.dimen.centerpic_margin) + additionalMargin;
         int margin = Math.round(2 * lionMargin);
 
         Bitmap goldTexture = Bitmap.createScaledBitmap(BitmapFactory.decodeResource(res, R.drawable.gold), width, height, true);
